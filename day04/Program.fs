@@ -1,7 +1,6 @@
 ﻿module day04
 
 open System.IO  
-open System.Text.RegularExpressions;
 
 type Grid = char list list
 type Point = int*int
@@ -21,11 +20,11 @@ let collecti clt list =
     |> List.collect (fun (i, x) -> clt i x) // Apply the collector function
 
 
-let findX (lst: Grid) =
+let findAllOfLetter (lst: Grid) letter =
     lst
     |>  collecti (fun outer a -> 
             List.fold (fun (inner, acc) e -> 
-                if e = 'X' then (inner+1, (outer,inner) :: acc) else (inner+1, acc)
+                if e = letter then (inner+1, (outer,inner) :: acc) else (inner+1, acc)
             ) (0, []) a |> snd
         )
 
@@ -73,16 +72,36 @@ let searchAllDirections (list: Grid) (xStartPosition: Point) =
 
 let solution1 input : int = 
     let lst = readInput input
-    lst
-    |> findX 
+    findAllOfLetter lst 'X' 
     |> List.fold (fun acc i -> acc + searchAllDirections lst i) 0
+    
+let leftDashSpellsMas grid ((a,b): Point) =
+    let letters = [
+        match pointExists grid (a-1, b-1) with
+        | None -> '.'
+        | Some x -> getLetter grid x;
+        match pointExists grid (a+1, b+1) with
+        | None -> '.'
+        | Some x -> getLetter grid x]
+    letters = ['M';'S'] || letters = ['S';'M']
+    
+let rightDashSpellsMas grid ((a,b): Point) =
+    let letters = [
+        match pointExists grid (a-1, b+1) with
+        | None -> '.'
+        | Some x -> getLetter grid x;
+        match pointExists grid (a+1, b-1) with
+        | None -> '.'
+        | Some x -> getLetter grid x]
+    letters = ['M';'S'] || letters = ['S';'M']
 
-printfn "%d ?= %d" (solution1 example) 4
-printfn "%d = %d" (solution1 example2) 18
+let solution2 input : int = 
+    let lst = readInput input
+    findAllOfLetter lst 'A' 
+    |> List.fold (fun acc i -> acc + (if leftDashSpellsMas lst i && rightDashSpellsMas lst i then 1 else 0)) 0
 
 printfn "%d" (solution1 lines)
-
-// printfn "%d" solution2
+printfn "%d" (solution2 lines)
 
 
     
