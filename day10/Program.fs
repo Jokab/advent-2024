@@ -59,9 +59,9 @@ let findHikingTrailsFromTrailhead (map: TopMap) ((point): Trailhead): int =
                 let newVisited = Set.add (fst x) visited
                 match x with
                 | (_,_),height when height <> (previousHeight + 1) -> 0  
-                | (x,y),height when height = 9 && not (visitedNines.Contains((x,y))) ->
-                    visitedNines <- Set.add (x,y) visitedNines
-                    1
+                | (x,y),height when height = 9 -> 1// && not (visitedNines.Contains((x,y))) ->
+                    // visitedNines <- Set.add (x,y) visitedNines
+                    // 1
                 | (x,y),height ->
                                        printfn $"walking from %d{x},%d{y},%d{height}"
                                        helper (getPositionInDirection map ((x,y),height) Direction.UP) height newVisited
