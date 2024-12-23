@@ -14,7 +14,6 @@ let readInput (str: string) : Stone list =
 let rule1 (stone: Stone) = [1L]
 let rule2 (stone: Stone) =
     string stone 
-    |> Seq.toList 
     |> Seq.splitInto 2 
     |> Seq.map (fun e -> e |> Seq.map string |> System.String.Concat |> int64)
     |> List.ofSeq
@@ -27,7 +26,8 @@ let applyRule (stone: Stone)=
     | stoneNumber when (string stoneNumber).Length % 2 = 0 -> rule2 stone
     | _ -> rule3 stone
     
-let blink =
+let blink i =
+    printfn "%d" i
     List.fold (fun acc e -> 
         let newElements = List.fold (fun acc e -> e :: acc) [] (applyRule e)
         newElements @ acc
@@ -35,8 +35,8 @@ let blink =
     >> List.rev
 
 let solution1 (input: string) =
-    let result = List.fold (fun acc _ -> blink acc) (readInput input) (List.init 25 id)  
-    printfn $"result: %A{result} {result.Length}"
+    let result = List.fold (fun acc i -> blink i acc) (readInput input) (List.init 75 id)  
+    printfn $"{result.Length}"
     
 let test actual expected =
     if actual = expected
