@@ -2,20 +2,25 @@
 
 open System.IO  
 open System.Text.RegularExpressions
+open System;
 
 let input = File.ReadAllLines("input") |> List.ofArray
 let example = File.ReadAllLines("example") |> List.ofArray
 let example1 = File.ReadAllLines("example1") |> List.ofArray
+let example2 = File.ReadAllLines("example2") |> List.ofArray
 
 let getCoords regex input  =
     match Regex.Match(input, regex) with
     | x when x.Success ->
         x.Groups
         |> Seq.toList
-        |> (fun e -> (e[1].Value |> int, e[2].Value |> int))
+        |> (fun e -> (
+            e[1].Value |> double,
+            e[2].Value |> double
+        ))
     | _ -> failwith "lol"
 
-let findSmallestPushes (ax1,ay1) (bx1,by1) (px1,py1) : (int*int) option=
+let findSmallestPushes (ax1,ay1) (bx1,by1) (px1,py1)=
     (*
         ax*a + bx*b = px
             a = px - bx*b / ax
@@ -33,12 +38,12 @@ let findSmallestPushes (ax1,ay1) (bx1,by1) (px1,py1) : (int*int) option=
     // let b = (ay*px - py*ax) / (bx*ay + by*ax)
     // let b = ((ay*px)-(py*ax)) / ((by*ax) - (bx*ay))
     
-    let ax, ay, bx, by, px, py = float ax1,float ay1,float bx1,float by1,float px1,float py1
+    let ax, ay, bx, by, px, py =  ax1, ay1, bx1, by1,(px1+10000000000000.0),(py1+10000000000000.0)
     
     let b = ((ay*px)-(py*ax)) / ((bx*ay) - (by*ax))
     let a = (px - (bx*b)) / ax
-    if floor a = a && floor b = b
-    then Some (int a, int b)
+    if Math.Floor a = a && Math.Floor b = b
+    then Some (double a, double b)
     else None
     
 let buttonA = getCoords @"Button A: X\+(.+), Y\+(.+)"
@@ -57,8 +62,8 @@ let solution1 (input: string list) =
         |> List.mapi (fun i f -> f e[i])
         |> fun [buttonA; buttonB; prize] ->
             match findSmallestPushes buttonA buttonB prize with
-            | Some (a,b) -> (a*3) + b
-            | None -> 0)
+            | Some (a,b) -> (a*3.0) + b
+            | None -> 0.0)
     |> List.sum
 
-printfn $"%A{solution1 input}"
+printfn $"%f{solution1 input}"
